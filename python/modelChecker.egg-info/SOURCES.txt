@@ -1,0 +1,10 @@
+README.md
+setup.py
+python/modelChecker/__init__.py
+python/modelChecker/modelChecker_UI.py
+python/modelChecker/modelChecker_commands.py
+python/modelChecker/modelChecker_list.py
+python/modelChecker.egg-info/PKG-INFO
+python/modelChecker.egg-info/SOURCES.txt
+python/modelChecker.egg-info/dependency_links.txt
+python/modelChecker.egg-info/top_level.txt
