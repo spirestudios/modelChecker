@@ -342,4 +342,4 @@ if __name__ == "__main__":
         pass
     win = UI(parent=getMainWindow())
     win.show()
-    win.raise_()
+    # win.raise_()

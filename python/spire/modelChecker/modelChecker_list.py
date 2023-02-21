@@ -75,7 +75,7 @@ mcCommandsList = [
         "func": "ngons",
         "label": "Ngons",
         "category": "topology",
-        "defaultChecked": False,
+        "defaultChecked": True,
     },
     {
         "func": "openEdges",
@@ -93,7 +93,7 @@ mcCommandsList = [
         "func": "hardEdges",
         "label": "Hard Edges",
         "category": "topology",
-        "defaultChecked": False,
+        "defaultChecked": True,
     },
     {
         "func": "lamina",
@@ -117,7 +117,7 @@ mcCommandsList = [
         "func": "noneManifoldEdges",
         "label": "None Manifold Edges",
         "category": "topology",
-        "defaultChecked": False,
+        "defaultChecked": True,
     },
     {
         "func": "starlike",
@@ -129,25 +129,25 @@ mcCommandsList = [
         "func": "selfPenetratingUVs",
         "label": "Self Penetrating UVs",
         "category": "UVs",
-        "defaultChecked": False,
+        "defaultChecked": True,
     },
     {
         "func": "missingUVs",
         "label": "Missing UVs",
         "category": "UVs",
-        "defaultChecked": False,
+        "defaultChecked": True,
     },
     {
         "func": "uvRange",
         "label": "UV Range",
         "category": "UVs",
-        "defaultChecked": False,
+        "defaultChecked": True,
     },
     {
         "func": "crossBorder",
         "label": "Cross Border",
         "category": "UVs",
-        "defaultChecked": False,
+        "defaultChecked": True,
     },
     {
         "func": "onBorder",
