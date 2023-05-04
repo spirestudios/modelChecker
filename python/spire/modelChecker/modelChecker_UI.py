@@ -250,7 +250,7 @@ class UI(QtWidgets.QMainWindow):
 
     def filterNodes(self):
         self.SLMesh.clear()
-        selection = cmds.ls(selection=True, typ="transform")
+        selection = cmds.ls(selection=True, dag=True)
         if len(selection) > 0:
             nodes = selection
         elif self.selectedTopNode_UI.text() == "":
@@ -272,12 +272,12 @@ class UI(QtWidgets.QMainWindow):
     def filterGetTopNode(self, topNode):
         nodes = []
         if cmds.objExists(topNode):
-            nodes = cmds.listRelatives(topNode, allDescendents=True, typ="transform")
+            nodes = cmds.listRelatives(topNode, allDescendents=True)
             nodes.append(topNode)
         return nodes
 
     def filterGetAllNodes(self):
-        allNodes = cmds.ls(transforms=True)
+        allNodes = cmds.ls(dag=True)
         allUsuableNodes = []
         for node in allNodes:
             if not node in {"front", "persp", "top", "side"}:

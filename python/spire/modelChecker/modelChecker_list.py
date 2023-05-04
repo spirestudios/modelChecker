@@ -12,6 +12,12 @@ mcCommandsList = [
         "defaultChecked": True,
     },
     {
+        "func": "transformNames",
+        "label": "Transform Names",
+        "category": "naming",
+        "defaultChecked": True,
+    },
+    {
         "func": "shapeNames",
         "label": "Shape Names",
         "category": "naming",
@@ -114,8 +120,8 @@ mcCommandsList = [
         "defaultChecked": False,
     },
     {
-        "func": "noneManifoldEdges",
-        "label": "None Manifold Edges",
+        "func": "nonManifoldEdges",
+        "label": "Non Manifold Edges",
         "category": "topology",
         "defaultChecked": True,
     },
@@ -164,6 +170,12 @@ mcCommandsList = [
     {
         "func": "unknowns",
         "label": "Unknowns",
+        "category": "general",
+        "defaultChecked": True,
+    },
+    {
+        "func": "textureIsolateNode",
+        "label": "Texture Isolate Select Nodes",
         "category": "general",
         "defaultChecked": True,
     },

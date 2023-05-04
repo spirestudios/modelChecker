@@ -15,6 +15,17 @@ def trailingNumbers(nodes, SLMesh):
     return trailingNumbers
 
 
+def transformNames(nodes, SLMesh):
+    misnamed = []
+    nodes = cmds.ls(nodes, type="transform")
+    for node in nodes:
+        shapes = cmds.listRelatives(node, shapes=True)
+        if shapes is not None:
+            if "_geo" not in node:
+                misnamed.append(node)
+    return misnamed
+
+
 def duplicatedNames(nodes, SLMesh):
     duplicatedNames = []
     for node in nodes:
@@ -35,11 +46,12 @@ def shapeNames(nodes, SLMesh):
     shapeNames = []
     for node in nodes:
         new = node.split("|")
-        shape = cmds.listRelatives(node, shapes=True)
-        if shape:
-            shapename = new[-1] + "Shape"
-            if shape[0] != shapename:
-                shapeNames.append(node)
+        shapes = cmds.listRelatives(node, shapes=True)
+        if shapes is not None:
+            for shape in shapes:
+                shapename = new[-1] + "Shape"
+                if shape != shapename:
+                    shapeNames.append(shape)
     return shapeNames
 
 
@@ -165,8 +177,8 @@ def selfPenetratingUVs(transformNodes, SLMesh):
     return selfPenetratingUVs
 
 
-def noneManifoldEdges(_, SLMesh):
-    noneManifoldEdges = []
+def nonManifoldEdges(_, SLMesh):
+    nonManifoldEdges = []
     selIt = om.MItSelectionList(SLMesh)
     while not selIt.isDone():
         edgeIt = om.MItMeshEdge(selIt.getDagPath())
@@ -174,10 +186,10 @@ def noneManifoldEdges(_, SLMesh):
         while not edgeIt.isDone():
             if edgeIt.numConnectedFaces() > 2:
                 componentName = str(objectName) + ".e[" + str(edgeIt.index()) + "]"
-                noneManifoldEdges.append(componentName)
+                nonManifoldEdges.append(componentName)
             edgeIt.next()
         selIt.next()
-    return noneManifoldEdges
+    return nonManifoldEdges
 
 
 def openEdges(_, SLMesh):
@@ -391,6 +403,15 @@ def keyFrames(nodes, SLMesh):
 
 def unknowns(nodes, _):
     return cmds.ls(type="unknown")
+
+
+def textureIsolateNode(nodes, _):
+    issues = []
+    nodes = cmds.ls(st=1)
+    for node in nodes:
+        if "textureIsolateSelect" in node:
+            issues.append(node)
+    return issues
 
 
 def uvSetName(_, SLMesh):
