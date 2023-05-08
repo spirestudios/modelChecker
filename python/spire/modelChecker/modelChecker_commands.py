@@ -316,15 +316,16 @@ def crossBorder(_, SLMesh):
 def unfrozenTransforms(nodes, SLMesh):
     unfrozenTransforms = []
     for node in nodes:
-        translation = cmds.xform(node, q=True, worldSpace=True, translation=True)
-        rotation = cmds.xform(node, q=True, worldSpace=True, rotation=True)
-        scale = cmds.xform(node, q=True, worldSpace=True, scale=True)
-        if (
-            translation != [0.0, 0.0, 0.0]
-            or rotation != [0.0, 0.0, 0.0]
-            or scale != [1.0, 1.0, 1.0]
-        ):
-            unfrozenTransforms.append(node)
+        if cmds.nodeType(node) == "transform":
+            translation = cmds.xform(node, q=True, worldSpace=True, translation=True)
+            rotation = cmds.xform(node, q=True, worldSpace=True, rotation=True)
+            scale = cmds.xform(node, q=True, worldSpace=True, scale=True)
+            if (
+                translation != [0.0, 0.0, 0.0]
+                or rotation != [0.0, 0.0, 0.0]
+                or scale != [1.0, 1.0, 1.0]
+            ):
+                unfrozenTransforms.append(node)
     return unfrozenTransforms
 
 
@@ -362,8 +363,9 @@ def history(nodes, SLMesh):
 def uncenteredPivots(nodes, SLMesh):
     uncenteredPivots = []
     for node in nodes:
-        if cmds.xform(node, q=1, ws=1, rp=1) != [0, 0, 0]:
-            uncenteredPivots.append(node)
+        if cmds.nodeType(node) == "transform":
+            if cmds.xform(node, q=1, ws=1, rp=1) != [0, 0, 0]:
+                uncenteredPivots.append(node)
     return uncenteredPivots
 
 
@@ -394,7 +396,7 @@ def keyFrames(nodes, SLMesh):
     for node in nodes:
         shape = cmds.listRelatives(node, shapes=True, fullPath=True)
         if shape and cmds.nodeType(shape[0]) == "mesh":
-            if cmds.currentTime(query=True) != cmds.findKeyFrame(
+            if cmds.currentTime(query=True) != cmds.findKeyframe(
                 hi="below", shape=True, which="last"
             ):
                 keyFrames += shape
