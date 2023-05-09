@@ -15,7 +15,11 @@ def trailingNumbers(nodes, SLMesh):
     return trailingNumbers
 
 
-def transformNames(nodes, SLMesh):
+def transformNamesEndInGeo(nodes, SLMesh):
+    """
+    Returns a list of shape nodes that don't end in "_geo"
+    Each shape node should end in _geo and correspond to a parent transform node
+    """
     misnamed = []
     nodes = cmds.ls(nodes, type="transform")
     for node in nodes:
@@ -407,7 +411,10 @@ def unknowns(nodes, _):
     return cmds.ls(type="unknown")
 
 
-def textureIsolateNode(nodes, _):
+def noTextureIsolateNode(nodes, _):
+    """
+    Checks if your scene has any textureIsolateSelect nodes which cause issues down the line
+    """
     issues = []
     nodes = cmds.ls(st=1)
     for node in nodes:

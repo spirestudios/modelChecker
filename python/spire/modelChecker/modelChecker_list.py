@@ -12,8 +12,8 @@ mcCommandsList = [
         "defaultChecked": True,
     },
     {
-        "func": "transformNames",
-        "label": "Transform Names",
+        "func": "transformNamesEndInGeo",
+        "label": "Transform Naming Convention",
         "category": "naming",
         "defaultChecked": True,
     },
@@ -174,8 +174,8 @@ mcCommandsList = [
         "defaultChecked": True,
     },
     {
-        "func": "textureIsolateNode",
-        "label": "Texture Isolate Select Nodes",
+        "func": "noTextureIsolateNode",
+        "label": "Contains Texture Isolate Select Nodes",
         "category": "general",
         "defaultChecked": True,
     },
