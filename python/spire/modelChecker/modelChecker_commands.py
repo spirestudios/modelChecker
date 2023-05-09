@@ -15,6 +15,21 @@ def trailingNumbers(nodes, SLMesh):
     return trailingNumbers
 
 
+def transformNamesEndInGeo(nodes, SLMesh):
+    """
+    Returns a list of shape nodes that don't end in "_geo"
+    Each shape node should end in _geo and correspond to a parent transform node
+    """
+    misnamed = []
+    nodes = cmds.ls(nodes, type="transform")
+    for node in nodes:
+        shapes = cmds.listRelatives(node, shapes=True)
+        if shapes is not None:
+            if "_geo" not in node:
+                misnamed.append(node)
+    return misnamed
+
+
 def duplicatedNames(nodes, SLMesh):
     duplicatedNames = []
     for node in nodes:
@@ -35,11 +50,12 @@ def shapeNames(nodes, SLMesh):
     shapeNames = []
     for node in nodes:
         new = node.split("|")
-        shape = cmds.listRelatives(node, shapes=True)
-        if shape:
-            shapename = new[-1] + "Shape"
-            if shape[0] != shapename:
-                shapeNames.append(node)
+        shapes = cmds.listRelatives(node, shapes=True)
+        if shapes is not None:
+            for shape in shapes:
+                shapename = new[-1] + "Shape"
+                if shape != shapename:
+                    shapeNames.append(shape)
     return shapeNames
 
 
@@ -165,8 +181,8 @@ def selfPenetratingUVs(transformNodes, SLMesh):
     return selfPenetratingUVs
 
 
-def noneManifoldEdges(_, SLMesh):
-    noneManifoldEdges = []
+def nonManifoldEdges(_, SLMesh):
+    nonManifoldEdges = []
     selIt = om.MItSelectionList(SLMesh)
     while not selIt.isDone():
         edgeIt = om.MItMeshEdge(selIt.getDagPath())
@@ -174,10 +190,10 @@ def noneManifoldEdges(_, SLMesh):
         while not edgeIt.isDone():
             if edgeIt.numConnectedFaces() > 2:
                 componentName = str(objectName) + ".e[" + str(edgeIt.index()) + "]"
-                noneManifoldEdges.append(componentName)
+                nonManifoldEdges.append(componentName)
             edgeIt.next()
         selIt.next()
-    return noneManifoldEdges
+    return nonManifoldEdges
 
 
 def openEdges(_, SLMesh):
@@ -304,15 +320,16 @@ def crossBorder(_, SLMesh):
 def unfrozenTransforms(nodes, SLMesh):
     unfrozenTransforms = []
     for node in nodes:
-        translation = cmds.xform(node, q=True, worldSpace=True, translation=True)
-        rotation = cmds.xform(node, q=True, worldSpace=True, rotation=True)
-        scale = cmds.xform(node, q=True, worldSpace=True, scale=True)
-        if (
-            translation != [0.0, 0.0, 0.0]
-            or rotation != [0.0, 0.0, 0.0]
-            or scale != [1.0, 1.0, 1.0]
-        ):
-            unfrozenTransforms.append(node)
+        if cmds.nodeType(node) == "transform":
+            translation = cmds.xform(node, q=True, worldSpace=True, translation=True)
+            rotation = cmds.xform(node, q=True, worldSpace=True, rotation=True)
+            scale = cmds.xform(node, q=True, worldSpace=True, scale=True)
+            if (
+                translation != [0.0, 0.0, 0.0]
+                or rotation != [0.0, 0.0, 0.0]
+                or scale != [1.0, 1.0, 1.0]
+            ):
+                unfrozenTransforms.append(node)
     return unfrozenTransforms
 
 
@@ -350,8 +367,9 @@ def history(nodes, SLMesh):
 def uncenteredPivots(nodes, SLMesh):
     uncenteredPivots = []
     for node in nodes:
-        if cmds.xform(node, q=1, ws=1, rp=1) != [0, 0, 0]:
-            uncenteredPivots.append(node)
+        if cmds.nodeType(node) == "transform":
+            if cmds.xform(node, q=1, ws=1, rp=1) != [0, 0, 0]:
+                uncenteredPivots.append(node)
     return uncenteredPivots
 
 
@@ -382,7 +400,7 @@ def keyFrames(nodes, SLMesh):
     for node in nodes:
         shape = cmds.listRelatives(node, shapes=True, fullPath=True)
         if shape and cmds.nodeType(shape[0]) == "mesh":
-            if cmds.currentTime(query=True) != cmds.findKeyFrame(
+            if cmds.currentTime(query=True) != cmds.findKeyframe(
                 hi="below", shape=True, which="last"
             ):
                 keyFrames += shape
@@ -391,6 +409,18 @@ def keyFrames(nodes, SLMesh):
 
 def unknowns(nodes, _):
     return cmds.ls(type="unknown")
+
+
+def noTextureIsolateNode(nodes, _):
+    """
+    Checks if your scene has any textureIsolateSelect nodes which cause issues down the line
+    """
+    issues = []
+    nodes = cmds.ls(st=1)
+    for node in nodes:
+        if "textureIsolateSelect" in node:
+            issues.append(node)
+    return issues
 
 
 def uvSetName(_, SLMesh):
