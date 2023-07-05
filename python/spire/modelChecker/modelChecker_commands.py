@@ -418,7 +418,7 @@ def noTextureIsolateNode(nodes, _):
     issues = []
     nodes = cmds.ls(st=1)
     for node in nodes:
-        if "textureIsolateSelect" in node:
+        if "textureEditorIsolateSelect" in node:
             issues.append(node)
     return issues
 
