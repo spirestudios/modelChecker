@@ -185,4 +185,10 @@ mcCommandsList = [
         "category": "UVs",
         "defaultChecked": True,
     },
+    {
+        "func": "multipleUvSets",
+        "label": "Multiple UV Sets",
+        "category": "UVs",
+        "defaultChecked": True,
+    },
 ]

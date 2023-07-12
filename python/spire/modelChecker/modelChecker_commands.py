@@ -1,6 +1,7 @@
+from datetime import datetime, timedelta
+
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
-import sys
 
 release = cmds.about(version=True)
 version = 2023 if "Preview" in release else int(cmds.about(version=True))
@@ -10,8 +11,17 @@ numbers = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
 def trailingNumbers(nodes, SLMesh):
     trailingNumbers = []
     for node in nodes:
+        childCheck = cmds.listRelatives(node, c=True) or []
         if node[-1] in numbers:
-            trailingNumbers.append(node)
+            if len(childCheck) == 0:
+                trailingNumbers.append(node)
+            else:
+                for child in childCheck:
+                    if "_geo" in child:
+                        continue
+                    else:
+                        trailingNumbers.append(node)
+                        break
     return trailingNumbers
 
 
@@ -170,6 +180,8 @@ def zeroLengthEdges(_, SLMesh):
 def selfPenetratingUVs(transformNodes, SLMesh):
     selfPenetratingUVs = []
     for node in transformNodes:
+        if "cornea" in node or "hair" in node:
+            continue
         shape = cmds.listRelatives(node, shapes=True, fullPath=True)
         convertToFaces = cmds.ls(
             cmds.polyListComponentConversion(shape, tf=True), fl=True
@@ -347,21 +359,28 @@ def shaders(transformNodes, _):
     for node in transformNodes:
         shape = cmds.listRelatives(node, shapes=True, fullPath=True)
         if cmds.nodeType(shape) == "mesh" and shape:
-            shadingGrps = cmds.listConnections(shape, type="shadingEngine")
-            if shadingGrps[0] != "initialShadingGroup":
+            try:
+                shadingGrps = cmds.listConnections(shape, type="shadingEngine")
+                materials = cmds.ls(cmds.listConnections(shadingGrps), materials=True)
+                if shadingGrps[0].split("_", 1)[1] != materials[0].split("_", 1)[1]:
+                    shaders.append(node)
+            except:
                 shaders.append(node)
-    return shaders
 
 
 def history(nodes, SLMesh):
     history = []
-    for node in nodes:
-        shape = cmds.listRelatives(node, shapes=True, fullPath=True)
-        if shape and cmds.nodeType(shape[0]) == "mesh":
-            historySize = len(cmds.listHistory(shape))
-            if historySize > 1:
-                history.append(node)
-    return history
+    cleanedTime = cmds.fileInfo("spireHistoryCleaned", query=True)
+    if (
+        len(cleanedTime) != 0
+        and datetime.strptime(cleanedTime[0], "%Y-%m-%d %H:%M:%S.%f")
+        + timedelta(hours=1)
+        > datetime.now()
+    ):
+        return history
+    else:
+        history.append("re-run spire remove history")
+        return history
 
 
 def uncenteredPivots(nodes, SLMesh):
@@ -377,21 +396,21 @@ def emptyGroups(nodes, SLMesh):
     emptyGroups = []
     for node in nodes:
         children = cmds.listRelatives(node, ad=True)
-        if not children:
+        if not children and "Shape" not in node:
             emptyGroups.append(node)
     return emptyGroups
 
 
 def parentGeometry(transformNodes, SLMesh):
     parentGeometry = []
+    transformNodes = cmds.ls(transformNodes, type="transform")
     for node in transformNodes:
-        parents = cmds.listRelatives(node, p=True, fullPath=True)
-        if parents:
-            for parent in parents:
-                children = cmds.listRelatives(parent, fullPath=True)
-                for parent in children:
-                    if cmds.nodeType(parent) == "mesh":
-                        parentGeometry.append(node)
+        parents = cmds.listRelatives(node, p=True, fullPath=True) or []
+        for parent in parents:
+            children = cmds.listRelatives(parent, fullPath=True) or []
+            for parent in children:
+                if cmds.nodeType(parent) == "mesh" and cmds.nodeType(node) != "shape":
+                    parentGeometry.append(node)
     return parentGeometry
 
 
@@ -426,3 +445,14 @@ def noTextureIsolateNode(nodes, _):
 def uvSetName(_, SLMesh):
     return cmds.polyUVSet(uvs="map1", projections=True)
     # probably should switch to a regex, but Randy says only 'map1' causes issues
+
+
+def multipleUvSets(nodes, _):
+    multiples = []
+    for node in nodes:
+        if cmds.nodeType(node) == "mesh":
+            try:
+                second_set = node.uvSet[1]
+                multiples.append(node)
+            except:
+                pass
