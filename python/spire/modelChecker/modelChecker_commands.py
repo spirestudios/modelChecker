@@ -180,7 +180,7 @@ def zeroLengthEdges(_, SLMesh):
 def selfPenetratingUVs(transformNodes, SLMesh):
     selfPenetratingUVs = []
     for node in transformNodes:
-        if "cornea" in node or "hair" in node:
+        if "cornea" in node in node:
             continue
         shape = cmds.listRelatives(node, shapes=True, fullPath=True)
         convertToFaces = cmds.ls(
