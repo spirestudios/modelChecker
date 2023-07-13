@@ -1,0 +1,10 @@
+name: rez-release
+
+on:
+  push:
+    branches:
+      - main
+      - 'modelChecker-*' # patch release branch patter
+jobs:
+  call-workflow:
+    uses: spirestudios/github_actions_workflows/.github/workflows/rez-release.yaml@main
