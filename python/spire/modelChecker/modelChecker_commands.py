@@ -355,6 +355,7 @@ def layers(nodes, _):
 
 
 def shaders(transformNodes, _):
+    # transformNodes = cmds.ls(type="transform")
     shaders = []
     for node in transformNodes:
         shape = cmds.listRelatives(node, shapes=True, fullPath=True)
@@ -362,10 +363,13 @@ def shaders(transformNodes, _):
             try:
                 shadingGrps = cmds.listConnections(shape, type="shadingEngine")
                 materials = cmds.ls(cmds.listConnections(shadingGrps), materials=True)
-                if shadingGrps[0].split("_", 1)[1] != materials[0].split("_", 1)[1]:
+                shader = shadingGrps[0].split("_", 1)
+                material = materials[0].split("_", 1)
+                if shader[1] != material[1] or shader[0] != "MI" or material[0] != "M":
                     shaders.append(node)
             except:
                 shaders.append(node)
+    return shaders
 
 
 def history(nodes, SLMesh):
